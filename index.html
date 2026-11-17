@@ -14,25 +14,53 @@
     video {
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       object-fit: contain;
-      pointer-events: none;   /* Klicks und Taps erreichen das Video gar nicht */
+      pointer-events: none;
+    }
+    /* native Steuerelemente und Play-Overlay ausblenden (iOS/Android) */
+    video::-webkit-media-controls,
+    video::-webkit-media-controls-start-playback-button,
+    video::-webkit-media-controls-overlay-play-button {
+      display: none !important;
+      -webkit-appearance: none;
+    }
+    #start {
+      display: none;
+      position: fixed;
+      inset: 0;
+      margin: auto;
+      width: 160px;
+      height: 60px;
+      font-size: 1.2rem;
+      background: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <video id="v" src="dontblink.mp4"
-         autoplay muted loop playsinline
-         disablepictureinpicture
-         controlslist="nodownload noremoteplayback fullscreen"></video>
+         autoplay muted loop playsinline preload="auto"
+         disablepictureinpicture disableremoteplayback
+         controlslist="nodownload noremoteplayback"></video>
+  <button id="start">Start</button>
 
   <script>
     const v = document.getElementById('v');
+    const b = document.getElementById('start');
 
-    // Falls doch pausiert wird (Tastatur, Kopfhörer-Taste, Betriebssystem): sofort weiterspielen
-    v.addEventListener('pause', () => v.play());
+    function tryPlay() {
+      v.play()
+        .then(() => { b.style.display = 'none'; })
+        .catch(() => { b.style.display = 'block'; });  // Autoplay blockiert → Knopf zeigen
+    }
 
-    // Rechtsklick-Menü ausschalten
+    b.addEventListener('click', tryPlay);
+    v.addEventListener('pause', () => { if (!v.ended) tryPlay(); });
     document.addEventListener('contextmenu', e => e.preventDefault());
+
+    tryPlay();
   </script>
 </body>
-</html>
