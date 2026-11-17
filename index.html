@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Don't Blink</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      pointer-events: none;   /* Klicks und Taps erreichen das Video gar nicht */
+    }
+  </style>
+</head>
+<body>
+  <video id="v" src="dontblink.mp4"
+         autoplay muted loop playsinline
+         disablepictureinpicture
+         controlslist="nodownload noremoteplayback fullscreen"></video>
+
+  <script>
+    const v = document.getElementById('v');
+
+    // Falls doch pausiert wird (Tastatur, Kopfhörer-Taste, Betriebssystem): sofort weiterspielen
+    v.addEventListener('pause', () => v.play());
+
+    // Rechtsklick-Menü ausschalten
+    document.addEventListener('contextmenu', e => e.preventDefault());
+  </script>
+</body>
+</html>
